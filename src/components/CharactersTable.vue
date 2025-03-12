@@ -6,6 +6,11 @@
 
         <q-table :rows="filteredCharacters" :columns="columns" row-key="id" :pagination="pagination"
             @request="loadCharacters" :loading="loading" hide-bottom>
+            <template v-slot:no-data>
+                <div class="text-center q-pa-md text-h6">
+                    Personaje no encontrado ❌
+                </div>
+            </template>
             <template v-slot:body-cell-image="props">
                 <q-td :props="props">
                     <img :src="props.row.image" alt="Character Image" class="character-img" />
@@ -18,7 +23,6 @@
 </template>
 
 <style scoped>
-
 h1 {
     font-size: clamp(1.8rem, 4vw, 3rem);
     text-align: center;
@@ -185,17 +189,28 @@ export default defineComponent({
             loading.value = true;
             try {
                 const data = await fetchCharacters(pagination.value.page, props.searchQuery || '');
-                characters.value = data.results;
-                maxPages.value = data.info.pages; // ✅ Actualizamos el total de páginas
-            } catch (error) {
-                console.error('Error fetching characters:', error);
+                characters.value = data.results || [];  // ✅ Si no hay resultados, que sea un array vacío
+                maxPages.value = data.info.pages;
+            } catch (error: unknown) {
+                console.error('❌ Error al obtener personajes:', error);
+
+                if (typeof error === 'object' && error !== null && 'response' in error) {
+                    const axiosError = error as { response?: { status?: number; data?: { error?: string } } };
+
+                    if (axiosError.response?.status === 404) {
+                        characters.value = [];
+                        maxPages.value = 1;
+                    }
+
+                    console.error('Detalles del error:', axiosError.response?.data?.error || 'Error desconocido');
+                }
             } finally {
                 loading.value = false;
             }
         };
 
         onMounted(async () => {
-            console.log('Component mounted, loading characters...');
+            console.log('Componente agregado, cargando personajes...');
             await loadCharacters();
         });
 
@@ -204,10 +219,18 @@ export default defineComponent({
         });
 
         const filteredCharacters = computed(() => {
+            console.log("Filtrando personajes, búsqueda:", props.searchQuery);
+            console.log("Personajes disponibles:", characters.value);
+
             if (!props.searchQuery) return characters.value;
-            return characters.value.filter(character =>
+
+            const filtered = characters.value.filter(character =>
                 character.name.toLowerCase().includes(props.searchQuery!.toLowerCase())
             );
+
+            console.log("📌 Personajes filtrados:", filtered);
+
+            return filtered.length > 0 ? filtered : [];
         });
 
         return {

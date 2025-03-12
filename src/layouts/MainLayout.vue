@@ -38,33 +38,39 @@ body.body--dark .q-toggle {
 }
 </style>
 
-<script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+<script lang="ts">
+import { defineComponent, ref, watch, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 
-const $q = useQuasar();
-const darkMode = ref(false);
+export default defineComponent({
+  setup() {
+    const $q = useQuasar();
+    const darkMode = ref(false);
 
+    onMounted(() => {
+      const savedDarkMode = localStorage.getItem('darkMode');
+      darkMode.value = savedDarkMode === 'true';
+      console.log('🌙 Cargando Dark Mode:', darkMode.value);
+      $q.dark.set(darkMode.value);
+    });
 
-onMounted(() => {
-  const savedDarkMode = localStorage.getItem('darkMode');
-  darkMode.value = savedDarkMode === 'true';
-  console.log('🌙 Cargando Dark Mode:', darkMode.value);
-  $q.dark.set(darkMode.value);
-});
+    const toggleDarkMode = () => {
+      darkMode.value = !darkMode.value;
+      localStorage.setItem('darkMode', darkMode.value.toString());
+      console.log('🔄 Modo oscuro cambiado:', darkMode.value);
+      $q.dark.set(darkMode.value);
+    };
 
+    watch(darkMode, (newValue) => {
+      console.log('📌 Aplicando Dark Mode:', newValue);
+      $q.dark.set(newValue);
+      localStorage.setItem('darkMode', newValue.toString());
+    });
 
-const toggleDarkMode = () => {
-  darkMode.value = !darkMode.value;
-  localStorage.setItem('darkMode', darkMode.value.toString());
-  console.log('🔄 Modo oscuro cambiado:', darkMode.value);
-  $q.dark.set(darkMode.value);
-};
-
-
-watch(darkMode, (newValue) => {
-  console.log('📌 Aplicando Dark Mode:', newValue);
-  $q.dark.set(newValue);
-  localStorage.setItem('darkMode', newValue.toString());
+    return {
+      darkMode,
+      toggleDarkMode
+    };
+  }
 });
 </script>

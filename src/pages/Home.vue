@@ -1,71 +1,76 @@
 <template>
-    <q-page class="q-pa-md">
-        <h1 class="title">Rick and Morty Characters</h1>
+  <q-page class="q-pa-md">
+    <h1 class="title">Rick and Morty Characters</h1>
 
-        <q-input v-model="searchQuery" outlined placeholder="Buscar personaje..." class="search-input" dense
-            @update:model-value="searchCharacters" filled clearable />
+    <q-input v-model="searchQuery" outlined placeholder="Buscar personaje..." class="search-input" dense
+      @update:model-value="searchCharacters" filled clearable />
 
 
-        <CharactersTable :searchQuery="searchQuery" />
-    </q-page>
+    <CharactersTable :searchQuery="searchQuery" />
+  </q-page>
 </template>
 <style scoped>
 .search-input {
-    max-width: 400px;
-    margin: 10px auto;
-    display: block;
+  max-width: 400px;
+  margin: 10px auto;
+  display: block;
 }
 
 .title {
-    font-size: 8rem;
-    font-weight: bold;
-    text-align: center;
-    flex: 1;
+  font-size: 8rem;
+  font-weight: bold;
+  text-align: center;
+  flex: 1;
 }
 
 h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    text-align: center;
-    max-width: 90%;
-    margin: 0 auto;
-    word-wrap: break-word;
-    margin-bottom: 50px;
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  max-width: 90%;
+  margin: 0 auto;
+  word-wrap: break-word;
+  margin-bottom: 50px;
 }
 
-/* 📌 Para tablets */
 @media (max-width: 1024px) {
   .title {
     font-size: 2.5rem;
   }
 }
 
-/* 📌 Para móviles grandes */
 @media (max-width: 768px) {
   .title {
     font-size: 2rem;
   }
 }
 
-/* 📌 Para móviles pequeños */
 @media (max-width: 480px) {
   .title {
     font-size: 1.5rem;
   }
 }
 </style>
-<script setup lang="ts">
-import { ref } from 'vue';
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
 import CharactersTable from '../components/CharactersTable.vue';
 
-const searchQuery = ref('');
+export default defineComponent({
+  name: "HomePage",
+  components: {
+    CharactersTable
+  },
+  setup() {
+    const searchQuery = ref('');
 
-const searchCharacters = () => {
-    console.log("Buscando personaje:", searchQuery.value);
-};
+    const searchCharacters = () => {
+      console.log("Buscando personaje:", searchQuery.value);
+    };
 
-defineOptions({
-    name: "HomePage"
+    return {
+      searchQuery,
+      searchCharacters
+    };
+  }
 });
-
 </script>

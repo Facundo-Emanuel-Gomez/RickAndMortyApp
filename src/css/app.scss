@@ -1,1 +1,16 @@
 // app global css in SCSS form
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* 📌 Aplicar Poppins como fuente global */
+body {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+body.body--dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.q-page {
+  background-color: transparent !important;
+}

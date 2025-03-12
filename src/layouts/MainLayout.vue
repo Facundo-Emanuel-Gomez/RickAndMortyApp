@@ -1,102 +1,70 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header elevated class="custom-header">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Quasar App
+        <q-toolbar-title class="title">
+          Rick and Morty App
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-toggle :model-value="darkMode" @update:model-value="toggleDarkMode" label="🌙 Dark Mode" color="yellow"
+          keep-color dense />
       </q-toolbar>
     </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
+<style scoped>
+.custom-header {
+  background-color: #1976D2;
+  color: white;
+}
+
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.q-toggle {
+  margin-right: 10px;
+}
+
+body.body--dark .q-toggle {
+  color: yellow !important;
+}
+</style>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { ref, watch, onMounted } from 'vue';
+import { useQuasar } from 'quasar';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+const $q = useQuasar();
+const darkMode = ref(false);
 
-const leftDrawerOpen = ref(false);
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-}
+onMounted(() => {
+  const savedDarkMode = localStorage.getItem('darkMode');
+  darkMode.value = savedDarkMode === 'true';
+  console.log('🌙 Cargando Dark Mode:', darkMode.value);
+  $q.dark.set(darkMode.value);
+});
+
+
+const toggleDarkMode = () => {
+  darkMode.value = !darkMode.value;
+  localStorage.setItem('darkMode', darkMode.value.toString());
+  console.log('🔄 Modo oscuro cambiado:', darkMode.value);
+  $q.dark.set(darkMode.value);
+};
+
+
+watch(darkMode, (newValue) => {
+  console.log('📌 Aplicando Dark Mode:', newValue);
+  $q.dark.set(newValue);
+  localStorage.setItem('darkMode', newValue.toString());
+});
 </script>

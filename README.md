@@ -36,7 +36,7 @@ Sigue estos pasos para correr el proyecto en tu entorno local:
 
 1️⃣ **Clona el repositorio:**
 ```sh
- git clone https://github.com/tuusuario/rick-and-morty-app.git
+ git clone [https://github.com/Facundo-Emanuel-Gomez/RickAndMortyApp.git]
 ```
 
 2️⃣ **Ingresa al directorio del proyecto:**
